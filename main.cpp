@@ -4,7 +4,7 @@
 #include "Rasterizer.h"
 #include "utils.h"
 
-
+// Calculates the error between image and target
 uint32_t fitness(Image& image, Image& target) {
 
     uint32_t ret = 0;
@@ -46,6 +46,8 @@ int main()
 
     DrawRectCommand cmds[drawCount];
 
+    //Currently fills the image with randomly
+    // colored squares
     for(int32_t i = 0; i < drawCount; i++) {
 
 
