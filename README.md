@@ -1,2 +1,2 @@
 # Copy-Art
-A program that approximates a given image using rectangles.
+A program, for my undergraduate thesis in Applied Mathematics, that approximates a given image using rectangles.
