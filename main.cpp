@@ -1,67 +1,29 @@
 #include <iostream>
-#include <random>
 
-#include "Rasterizer.h"
-#include "utils.h"
-
-// Calculates the error between image and target
-uint32_t fitness(Image& image, Image& target) {
-
-    uint32_t ret = 0;
-
-    Color* imagePixels = image.getMemoryPtr();
-    Color* targetPixels = target.getMemoryPtr();
-
-    for(int32_t i = 0; i < image.getHeight(); i++) {
-        for(int32_t j = 0; j < image.getWidth(); j++) {
-            int32_t index = i*image.getWidth() + j;
-
-            ret += (imagePixels[index].magSq() - targetPixels[index].magSq());
-
-        }
-    }
-
-
-    return ret;
-}
+#include "CopyArt.h"
 
 
 int main()
-{
-    Timer timer;
+{   //hard coded to 8 internally
+    int32_t populationSize = 8;
+    int32_t generationCount = 100000;
+    float mutationChance = .35;
 
-    Color c(10, 123, 0);
-    Color c2(204, 124, 234);
+    int32_t imageWidth = 128;
+    int32_t imageHeight = 128;
+    int32_t minSize = 1;
+    int32_t maxSize = 2;
+    int32_t rectCount = 10000;
 
-    Image target("ring.png");
-    Image buffer("ring.png");
+    std::string targetImageSrc = "oceanSunset.png";
+    std::string saveLocation = "OutImages/";
 
-    Rasterizer canvas;
-    canvas.setBuffer(&buffer);
+    CopyArt makeArt = CopyArt(populationSize, generationCount, mutationChance,
+                              imageWidth, imageHeight, minSize, maxSize, rectCount,
+                              targetImageSrc, saveLocation);
 
-
-    uint32_t drawCount = 6*4;
-
-    timer.start();
-
-    DrawRectCommand cmds[drawCount];
-
-    //Currently fills the image with randomly
-    // colored squares
-    for(int32_t i = 0; i < drawCount; i++) {
-
-
-        Color color = Color::random();
-        //cmds[i] = DrawRectCommand(x, y, width, height, color);
-        canvas.drawRect(100*(i % 6), 100*(i / 6), 100, 100, color);
-
-    }
-
-    //canvas.drawRects(cmds, drawCount);
-    std::cout << fitness(buffer, target) << std::endl;
-    std::cout << timer.stop() << " ms" << std::endl;
-
-    canvas.saveImage("canvas_out.png");
+    makeArt.start();
+    makeArt.saveImages();
 
     return 0;
 }

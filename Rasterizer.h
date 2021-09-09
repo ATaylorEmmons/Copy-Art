@@ -39,6 +39,10 @@ struct Color {
         uint8_t g() {return channels[1];}
         uint8_t b() {return channels[2];}
 
+        void setr(uint8_t red) {channels[0] = red; }
+        void setg(uint8_t green) {channels[1] = green; }
+        void setb(uint8_t blue) {channels[2] = blue; }
+
         Color operator-(Color& c) {
 
             return Color(
@@ -48,16 +52,26 @@ struct Color {
                     );
         }
 
-        int32_t magSq() {
+        bool operator==(Color& c) {
 
-            int32_t sumSQ = r()*r() + g()*g() + b()*b();
+            if(r() == c.r() && g() == c.g() && b() == c.b()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
 
-            return sumSQ;
+        double squareSum() {
+
+            return r()*r() + g()*g() + b()*b();
+
         }
 
     private:
         uint8_t channels[3];
 };
+
+
 
 class Image {
 
@@ -73,7 +87,7 @@ class Image {
 
         }
 
-        Image(int32_t width, int32_t height) {
+        Image(int32_t width = 0, int32_t height = 0) {
 
             this->m_width = width;
             this->m_height = height;
@@ -91,14 +105,16 @@ class Image {
         }
 
         ~Image() {
-
+            //free is used here rather than delete because
+            // STBI uses malloc to allocate memory.
+            // I chose to use the same memory allocation scheme for
+            // the whole class.
             free(memory);
 
         }
 
         int32_t getWidth() { return m_width; }
         int32_t getHeight() { return m_height; }
-
         Color* getMemoryPtr() { return memory; }
 
     private:
@@ -108,7 +124,7 @@ class Image {
 
 };
 
-struct DrawRectCommand {
+struct Rectangle {
 
     int32_t x;
     int32_t y;
@@ -116,9 +132,9 @@ struct DrawRectCommand {
     int32_t height;
     Color color;
 
-    DrawRectCommand() {}
+    Rectangle() {}
 
-    DrawRectCommand(int32_t x,
+    Rectangle(int32_t x,
                     int32_t y,
                     int32_t width,
                     int32_t height,
@@ -157,7 +173,7 @@ class Rasterizer {
             }
         }
 
-        void drawRects(DrawRectCommand* cmds, int cmdCount) {
+        void drawRects(Rectangle* cmds, int cmdCount) {
 
             for(int commandIndex = 0; commandIndex <  cmdCount; commandIndex++) {
 
@@ -167,7 +183,6 @@ class Rasterizer {
                 int32_t height = cmds[commandIndex].height;
                 Color color = cmds[commandIndex].color;
 
-                std::cout << x << ", " << y << std::endl;
                 this->drawRect(x, y, width, height, color);
 
             }
@@ -187,8 +202,15 @@ class Rasterizer {
 
             if(x < 0) { clippedX = 0; }
             if(y < 0) { clippedY = 0; }
-            if(x + width > getWidth()) { clippedWidth = getWidth(); }
-            if(y + height > getHeight()) { clippedHeight = getHeight(); }
+            if(x + width > getWidth()) {
+                clippedWidth = getWidth() - x;
+            }
+
+            if(y + height > getHeight()) {
+
+                clippedHeight = getHeight() - y;
+
+            }
 
 
 
