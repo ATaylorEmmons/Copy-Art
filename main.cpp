@@ -2,28 +2,32 @@
 
 #include "CopyArt.h"
 
-
 int main()
-{   //hard coded to 8 internally
-    int32_t populationSize = 8;
-    int32_t generationCount = 100000;
-    float mutationChance = .35;
+{
+    CopyArtParams params = {};
 
-    int32_t imageWidth = 128;
-    int32_t imageHeight = 128;
-    int32_t minSize = 1;
-    int32_t maxSize = 2;
-    int32_t rectCount = 10000;
+    params.populationSize = 32;
+    params.generationCount = 10000;
 
-    std::string targetImageSrc = "oceanSunset.png";
-    std::string saveLocation = "OutImages/";
+    params.colorMutationRate = 5;
+    params.positionMutationRate = 0;
+    params.sizeMutationRate = 0;
 
-    CopyArt makeArt = CopyArt(populationSize, generationCount, mutationChance,
-                              imageWidth, imageHeight, minSize, maxSize, rectCount,
-                              targetImageSrc, saveLocation);
+    params.width = 128;
+    params.height = 128;
+    params.minSize = 3;
+    params.maxSize = 5;
+    params.rectCount = 2500;
+
+
+
+    params.targetImageSrc = "oceanSunset.png";
+    params.saveLocation = "OutImages/";
+
+    CopyArt makeArt = CopyArt(params);
 
     makeArt.start();
-    makeArt.saveImages();
+    makeArt.saveTop(4);
 
     return 0;
 }

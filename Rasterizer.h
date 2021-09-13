@@ -26,6 +26,7 @@ struct Color {
             channels[0] = 0;
             channels[1] = 0;
             channels[2] = 0;
+            channels[3] = 1;
         }
 
         Color(uint8_t r, uint8_t g, uint8_t b) {
@@ -59,6 +60,18 @@ struct Color {
             } else {
                 return false;
             }
+        }
+
+        Color operator+ (Color c){
+            return Color{r() + c.r(), g() + c.g(), b() + c.b()};
+        }
+
+        Color operator/ (int8_t d) {
+            return Color{r()/d, g()/d, b()/d};
+        }
+
+        Color operator* (int8_t d) {
+            return Color{ r()*d, g()*d, b()*d };
         }
 
         double squareSum() {
@@ -131,21 +144,23 @@ struct Rectangle {
     int32_t width;
     int32_t height;
     Color color;
+    uint8_t alpha;
 
     Rectangle() {}
 
-    Rectangle(int32_t x,
-                    int32_t y,
-                    int32_t width,
-                    int32_t height,
-                    Color color) {
-                        this->x = x;
-                        this->y = y;
-                        this->width = width;
-                        this->height = height;
-                        this->color = color;
-
-                    }
+    Rectangle(  int32_t x,
+                int32_t y,
+                int32_t width,
+                int32_t height,
+                Color color,
+                int8_t alpha = 255) {
+                    this->x = x;
+                    this->y = y;
+                    this->width = width;
+                    this->height = height;
+                    this->color = color;
+                    this->alpha = alpha;
+                }
 
 };
 
@@ -182,13 +197,14 @@ class Rasterizer {
                 int32_t width = cmds[commandIndex].width;
                 int32_t height = cmds[commandIndex].height;
                 Color color = cmds[commandIndex].color;
+                uint8_t alpha = cmds[commandIndex].alpha;
 
-                this->drawRect(x, y, width, height, color);
+                this->drawRect(x, y, width, height, color, alpha);
 
             }
         }
 
-        void drawRect(int32_t x, int32_t y, int32_t width, int32_t height, Color color) {
+        void drawRect(int32_t x, int32_t y, int32_t width, int32_t height, Color color, int8_t alpha = 255) {
 
             if( x + width < 0) { return; }
             if( y + height < 0) { return; }
@@ -207,9 +223,7 @@ class Rasterizer {
             }
 
             if(y + height > getHeight()) {
-
                 clippedHeight = getHeight() - y;
-
             }
 
 
@@ -220,6 +234,9 @@ class Rasterizer {
                 int32_t start = (clippedY + j)*getWidth() + clippedX;
 
                 for(int32_t i = start; i < start + clippedWidth; i++) {
+
+                    Color dest = memory[i];
+
                     memory[i] = color;
                 }
             }
