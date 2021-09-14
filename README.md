@@ -2,7 +2,8 @@
 A program, for my undergraduate thesis in Applied Mathematics, that approximates a given image using rectangles.
 
 # How to Use:
-Fill in the params structure in main.
+Fill in the params structure in main.  
+
 *populationSize*: Must be even(if its not I don't know what happens). This will cause the program to allocate populationSize Image objects.  
 *generationCount*: For how many generation should the program run.  
 *colorMutationRate*: How much will a color change if mutation occurs.  
