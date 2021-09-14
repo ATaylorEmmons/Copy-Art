@@ -26,7 +26,6 @@ struct Color {
             channels[0] = 0;
             channels[1] = 0;
             channels[2] = 0;
-            channels[3] = 1;
         }
 
         Color(uint8_t r, uint8_t g, uint8_t b) {
@@ -66,14 +65,6 @@ struct Color {
             return Color{r() + c.r(), g() + c.g(), b() + c.b()};
         }
 
-        Color operator/ (int8_t d) {
-            return Color{r()/d, g()/d, b()/d};
-        }
-
-        Color operator* (int8_t d) {
-            return Color{ r()*d, g()*d, b()*d };
-        }
-
         double squareSum() {
 
             return r()*r() + g()*g() + b()*b();
@@ -97,6 +88,11 @@ class Image {
             m_width = -1;
             m_height = -1;
             memory = (Color*)stbi_load(path.c_str(), &m_width, &m_height, &channels, 3);
+
+            if(m_width == -1) {
+
+              throw std::invalid_argument("Something was wrong with the image, makes sure the path is correct and that it's format is .png");
+            }
 
         }
 
