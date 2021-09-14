@@ -10,7 +10,7 @@ Fill in the params structure in main.
 *positionMutationRate*: How much position will change if mutation occurs.(Has poor results)  
 *sizeMutationRate*: How much size will change if mutation occurs.(Has poor results)  
 
-*widthv: The width of the target image  
+*width*: The width of the target image  
 *height*: The height of the target image  
 *minSize*: The minimum size of a draw square  
 *maxSize*: The maximum size of a drawn square  
