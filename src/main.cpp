@@ -2,12 +2,19 @@
 
 #include "CopyArt.h"
 
+
+
+
 int main()
 {
     CopyArtParams params = {};
 
-    params.populationSize = 32;
-    params.generationCount = 10000;
+    params.populationSize = 128;
+    params.generationCount = 1000;
+
+    params.eliteRatio = .40;
+    params.childRatio = .40;
+    params.randomsRatio = .20;
 
     params.colorMutationRate = 5;
     params.positionMutationRate = 0;
@@ -15,9 +22,9 @@ int main()
 
     params.width = 128;
     params.height = 128;
-    params.minSize = 3;
-    params.maxSize = 5;
-    params.rectCount = 2500;
+    params.minSize = 5;
+    params.maxSize = 8;
+    params.rectCount = 1000;
 
 
 
@@ -26,8 +33,9 @@ int main()
 
     CopyArt makeArt = CopyArt(params);
 
+
     makeArt.start();
-    makeArt.saveTop(4);
+    makeArt.saveImages(4);
 
     return 0;
 }
