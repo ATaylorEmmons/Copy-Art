@@ -7,17 +7,17 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
+#include "utils.h"
+
 struct Color {
 
     public:
 
         static Color random() {
-            std::minstd_rand gen(std::random_device{}());
-            std::uniform_int_distribution<uint8_t> runif(0, 255);
 
-            uint8_t r = runif(gen);
-            uint8_t g = runif(gen);
-            uint8_t b = runif(gen);
+            uint8_t r = Globals::get().RNG.runifInt(0, 255);
+            uint8_t g = Globals::get().RNG.runifInt(0, 255);
+            uint8_t b = Globals::get().RNG.runifInt(0, 255);
 
             return Color(r, g, b);
         }
@@ -62,7 +62,7 @@ struct Color {
         }
 
         Color operator+ (Color c){
-            return Color{r() + c.r(), g() + c.g(), b() + c.b()};
+            return Color(r() + c.r(), g() + c.g(), b() + c.b());
         }
 
         double squareSum() {
