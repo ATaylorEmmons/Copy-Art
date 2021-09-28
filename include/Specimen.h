@@ -16,7 +16,7 @@ struct Specimen {
         for(int32_t j = 0; j < rectangleCount; j++) {
 
 
-            int32_t x = Globals::get().Globals::get().RNG.runifInt(0, maxX);
+            int32_t x = Globals::get().RNG.runifInt(0, maxX);
             int32_t y = Globals::get().RNG.runifInt(0, maxY);
 
             int32_t size = Globals::get().RNG.runifInt(minSize, maxSize);
@@ -32,16 +32,13 @@ struct Specimen {
     }
 
 
-    Specimen(Specimen& a, Specimen& b, int32_t rectangleCount, Image* img) {
+    Specimen(Specimen& a, Specimen& b, Image* img,
+              int32_t colorMutationRate, int32_t positionMutationRate, int32_t sizeMutationRate) {
 
         this->ref_Image = img;
 
-        //TODO: Find a better way to use these(Global?)
-        int32_t colorMutationRate = 5;
-        int32_t positionMutationRate = 0;
-        int32_t sizeMutationRate = 0;
 
-        for(int32_t i = 0; i < rectangleCount; i++) {
+        for(int32_t i = 0; i < a.traits.size(); i++) {
             this->traits.push_back(Rectangle());
 
 

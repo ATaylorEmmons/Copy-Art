@@ -1,20 +1,25 @@
 
-#include <chrono>
-
 #ifndef __utils_h_
 #define __utils_h_
 
 
+#include <chrono>
+#include <random>
+
 struct _RNG {
 
-   std::default_random_engine generator;
 
+    std::random_device rd;
    _RNG() {}
 
    //Includes min and max
    int32_t runifInt(int32_t min, int32_t max) {
 
         std::uniform_int_distribution<int32_t> randomNumber(min, max);
+
+
+
+        std::default_random_engine generator(rd());
 
         return randomNumber(generator);
 
@@ -25,6 +30,7 @@ struct _RNG {
 
         std::uniform_real_distribution<float> randomNumber(min, max);
 
+        std::default_random_engine generator(rd());
         return randomNumber(generator);
     }
 
@@ -32,6 +38,8 @@ struct _RNG {
     float rnormFloat(float mean, float sd) {
 
         std::normal_distribution<float> randomNumber(mean, sd);
+
+        std::default_random_engine generator(rd());
 
         return randomNumber(generator);
     }
