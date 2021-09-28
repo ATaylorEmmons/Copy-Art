@@ -25,8 +25,11 @@ Fill in the params structure in main.
 *saveLocation*: Where to save output images  
 
 $ copyart.exe pathToImageToCopy.png DirectoryToStoreImages paramsFile 
+
 include optional strings "videoMode" or "botMode" 
+
 videoMode: Output the best image of each generation to use as frames to make a video(I used Blender video editor)
+
 botMode: Used for analysis. Only outputs the fit and runtime.
 
 # Libraries
