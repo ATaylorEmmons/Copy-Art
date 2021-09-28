@@ -24,12 +24,9 @@ Fill in the params structure in main.
 *targetImageSrc*: The image to try and replicate  
 *saveLocation*: Where to save output images  
 
-$ copyart.exe pathToImageToCopy.png DirectoryToStoreImages paramsFile 
-
-include optional strings "videoMode" or "botMode" 
-
-videoMode: Output the best image of each generation to use as frames to make a video(I used Blender video editor)
-
+$ copyart.exe pathToImageToCopy.png DirectoryToStoreImages paramsFile__
+include optional strings "videoMode" or "botMode" __
+videoMode: Output the best image of each generation to use as frames to make a video(I used Blender video editor)__
 botMode: Used for analysis. Only outputs the fit and runtime.
 
 # Libraries
