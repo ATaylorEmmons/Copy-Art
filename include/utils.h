@@ -6,22 +6,26 @@
 #include <chrono>
 #include <random>
 
-struct _RNG {
 
+struct RNG {
+    RNG(long randSeed) {
 
-    std::random_device rd;
-   _RNG() {}
+      this->engine = std::default_random_engine{};
+      this->engine.seed(randSeed);
+
+    }
+
+    RNG() {}
+
+    ~RNG() {}
 
    //Includes min and max
    int32_t runifInt(int32_t min, int32_t max) {
 
         std::uniform_int_distribution<int32_t> randomNumber(min, max);
+        //std::default_random_engine generator(rd());
 
-
-
-        std::default_random_engine generator(rd());
-
-        return randomNumber(generator);
+        return randomNumber(engine);
 
     }
 
@@ -29,22 +33,28 @@ struct _RNG {
     float runifFloat(float min, float max) {
 
         std::uniform_real_distribution<float> randomNumber(min, max);
+        //std::default_random_engine generator(rd());
 
-        std::default_random_engine generator(rd());
-        return randomNumber(generator);
+        return randomNumber(engine);
     }
 
 
     float rnormFloat(float mean, float sd) {
 
         std::normal_distribution<float> randomNumber(mean, sd);
+        //std::default_random_engine generator(rd());
 
-        std::default_random_engine generator(rd());
+        return randomNumber(engine);
 
-        return randomNumber(generator);
     }
 
+  private:
+    unsigned long seed;
+    std::default_random_engine engine;
+
 };
+
+
 
 struct Timer {
 
@@ -53,6 +63,11 @@ struct Timer {
 
     Timer() {}
 
+    static long now() {
+
+      return std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
+    }
+
     void start() {
         t0 = std::chrono::high_resolution_clock::now();
     }
@@ -60,31 +75,10 @@ struct Timer {
     long stop() {
         t1 =  std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0);
-    	return duration.count();
+
+    	  return duration.count();
     }
 };
 
-
-class Globals {
-    public:
-        static Globals& get() {
-
-            static Globals instance;
-
-            return instance;
-        }
-
-        _RNG RNG;
-
-        ~Globals() {}
-
-
-    private:
-        Globals(Globals const&){}
-        void operator=(Globals const&){}
-
-        Globals() {}
-
-};
 
 #endif

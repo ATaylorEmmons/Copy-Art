@@ -54,6 +54,8 @@ struct CopyArt {
         int32_t height;
         int32_t rectangleCount;
 
+        RNG rng;
+
         Image* target;
         std::string saveLocation;
 
@@ -64,6 +66,8 @@ struct CopyArt {
 
 /* Constructor */
         CopyArt(CopyArtParams& params) {
+
+            rng = RNG(Timer::now());
 
             populationSize = params.populationSize;
             generationCount = params.generationCount;
@@ -90,7 +94,7 @@ struct CopyArt {
                 images.push_back(new Image(width, height));
 
                 //Create entirely random population to start
-                specimens.push_back(Specimen::random(width, height, minSize, maxSize, rectangleCount, images.at(i)));
+                specimens.push_back(Specimen::random(rng, width, height, minSize, maxSize, rectangleCount, images.at(i)));
 
                 canvas.setBuffer(images.at(i));
                 canvas.clear({10, 10, 10});
@@ -105,16 +109,21 @@ struct CopyArt {
             double startScore = scoreGeneration();
             double currentScore = startScore;
 
-            Timer timer;
+            Timer genTimer;
+            Timer artTimer;
+            artTimer.start();
             for(int32_t i = 0; i < generationCount; i++) {
 
-                timer.start();
+                genTimer.start();
                 createGeneration();
                 currentScore = scoreGeneration();
 
+                if(currentScore < 1000.0) {
+                    break;
+                }
 
                 if(!botMode) {
-                  std::string printStr = std::to_string(i) + ", " + std::to_string(currentScore) + ", " + std::to_string(timer.stop());
+                  std::string printStr = std::to_string(i) + ", " + std::to_string(currentScore) + ", " + std::to_string(genTimer.stop());
                   std::cout << printStr << std::endl;
                 }
 
@@ -125,7 +134,7 @@ struct CopyArt {
 
             }
 
-            std::cout << 1.0 -  double(currentScore)/double(startScore) << ", " << (float)timer.stop()/1000.0;
+            std::cout << 1.0 -  double(currentScore)/double(startScore) << ", " << artTimer.stop()/1000.0;
 
             if(!botMode)
               std::cout << std::endl;
@@ -137,6 +146,11 @@ struct CopyArt {
 */
         void createGeneration() {
 
+          long generationTime;
+          long renderTime;
+          Timer timer;
+
+          timer.start();
             int32_t endEliteRange = specimens.size()*eliteRatio;
             int32_t endChildrenRange = specimens.size()*(eliteRatio + childRatio);
             int32_t endRandomRange = specimens.size();
@@ -146,34 +160,36 @@ struct CopyArt {
             //Create the child portion of the generation
             for(int32_t i = endEliteRange; i < endChildrenRange; i++) {
 
-                int32_t parent1 = Globals::get().RNG.runifInt(0, endEliteRange - 1);
-                int32_t parent2 = Globals::get().RNG.runifInt(0, endEliteRange - 1);
+                int32_t parent1 = rng.runifInt(0, endEliteRange - 1);
+                int32_t parent2 = rng.runifInt(0, endEliteRange - 1);
 
                 //Avoid parents being the same
                 if(endEliteRange > 1) {
                   while(parent1 == parent2) {
-                      parent2 = Globals::get().RNG.runifInt(0, endEliteRange - 1);
+                      parent2 = rng.runifInt(0, endEliteRange - 1);
                   }
                 }
 
-                specimens.at(i) = Specimen(specimens.at(parent1), specimens.at(parent2), specimens.at(i).ref_Image,
-                                            colorMutationRate, positionMutationRate, sizeMutationRate);
+                specimens.at(i) = Specimen(specimens.at(parent1), specimens.at(parent2), specimens.at(i).ref_Image, rng,
+                colorMutationRate, positionMutationRate, sizeMutationRate);
 
             }
-
 
           /*Elite X Randoms
             Have one of the parents be random
           */
 
           for(int32_t i = endChildrenRange; i < endRandomRange; i++) {
-              int32_t parent1 = Globals::get().RNG.runifInt(0, endEliteRange - 1);
+              int32_t parent1 = rng.runifInt(0, endEliteRange - 1);
 
-              Specimen randParent2 = Specimen::random(width, height, minSize, maxSize, rectangleCount, NULL);
+              Specimen randParent2 = Specimen::random(rng, width, height, minSize, maxSize, rectangleCount, NULL);
 
-              specimens.at(i) = Specimen(specimens.at(parent1), randParent2, specimens.at(i).ref_Image, 0, 0, 0);
+              specimens.at(i) = Specimen(specimens.at(parent1), randParent2, specimens.at(i).ref_Image,rng, 0, 0, 0);
                                           //colorMutationRate, positionMutationRate, sizeMutationRate);
           }
+          generationTime = timer.stop();
+
+          timer.start();
 
             //Draw each specimen
           for(int32_t i = endEliteRange; i < populationSize; i++) {
@@ -182,6 +198,9 @@ struct CopyArt {
               canvas.drawRects(specimens.at(i).traits.data(), rectangleCount);
           }
 
+          renderTime = timer.stop();
+
+          //std::cout << generationTime << ", " << renderTime << std::endl;
       }
 
 
@@ -255,8 +274,7 @@ struct CopyArt {
                 for(int32_t j = 0; j < image->getWidth(); j++) {
 
                     int32_t index = i*image->getWidth() + j;
-
-                    ret += (imagePixels[index] - targetPixels[index]).squareSum();
+                    ret += (imagePixels[index] - targetPixels[index]).absSum();
 
                 }
             }

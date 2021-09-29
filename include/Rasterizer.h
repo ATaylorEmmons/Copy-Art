@@ -13,11 +13,11 @@ struct Color {
 
     public:
 
-        static Color random() {
+        static Color random(RNG& rng) {
 
-            uint8_t r = Globals::get().RNG.runifInt(0, 255);
-            uint8_t g = Globals::get().RNG.runifInt(0, 255);
-            uint8_t b = Globals::get().RNG.runifInt(0, 255);
+            uint8_t r = rng.runifInt(0, 255);
+            uint8_t g = rng.runifInt(0, 255);
+            uint8_t b = rng.runifInt(0, 255);
 
             return Color(r, g, b);
         }
@@ -42,6 +42,8 @@ struct Color {
         void setr(uint8_t red) {channels[0] = red; }
         void setg(uint8_t green) {channels[1] = green; }
         void setb(uint8_t blue) {channels[2] = blue; }
+
+
 
         Color operator-(Color& c) {
 
@@ -68,6 +70,12 @@ struct Color {
         double squareSum() {
 
             return r()*r() + g()*g() + b()*b();
+
+        }
+
+        double absSum() {
+
+            return abs(r()) + abs(g()) + abs(b());
 
         }
 
